@@ -21,7 +21,7 @@ class Freefall_object:
 
 
     def __repr__(self):
-        return f"Freefall_object(name={self.name}, height={self.start_height} m, velocity={self.start_velocity} m/s, drag_coefficient={self.drag_coefficient}, mass={self.mass} kg)"
+        return f"Freefall_object(name={self.name}, height={self.start_height} m, velocity={self.start_velocity} m/s, drag_coefficient={self.drag_coefficient}, mass={self.mass} kg, cross_sectional_area={self.cross_sectional_area} m^2)"
     
 
     def calculate_drag_constant(self, air_density: float) -> float:
