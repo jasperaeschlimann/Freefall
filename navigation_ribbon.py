@@ -27,6 +27,7 @@ class NavigationRibbon(QWidget):
         """
         # First, enable all buttons
         self.home_button.setEnabled(True)
+        self.theory_button.setEnabled(True)
         self.analytical_button.setEnabled(True)
         self.euler_button.setEnabled(True)
         self.modified_euler_button.setEnabled(True)
@@ -34,6 +35,8 @@ class NavigationRibbon(QWidget):
         # Then, disable the active button
         if active_button == "home":
             self.home_button.setEnabled(False)
+        elif active_button == "theory":
+            self.theory_button.setEnabled(False)
         elif active_button == "analytical":
             self.analytical_button.setEnabled(False)
         elif active_button == "euler":

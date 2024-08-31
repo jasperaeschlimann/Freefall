@@ -17,9 +17,6 @@ from PyQt5.QtWidgets import (
 class AnalyticalWindow(QWidget):
     def __init__(self, parent=None):
         super(AnalyticalWindow, self).__init__(parent)
-        
-        # Set the title and size of the window
-        self.setGeometry(100, 100, 800, 600)
 
         # Create a layout
         self.layout = QVBoxLayout(self)
@@ -30,7 +27,9 @@ class AnalyticalWindow(QWidget):
 
         # Connect ribbon buttons to methods
         self.navigation_ribbon.home_button.clicked.connect(self.go_to_home)
-        self.navigation_ribbon.analytical_button.clicked.connect(self.show)  # Stay on this window
+        self.navigation_ribbon.theory_button.clicked.connect(self.go_to_theory_window)
+        self.navigation_ribbon.euler_button.clicked.connect(self.go_to_euler_window)
+        self.navigation_ribbon.modified_euler_button.clicked.connect(self.go_to_modified_euler_window)
 
         # Add a title label
         self.title_label = QLabel("Freefall Simulator", self)
@@ -46,7 +45,7 @@ class AnalyticalWindow(QWidget):
 
         # Add a spin box for start height adjustment
         self.start_height_spinbox = QDoubleSpinBox(self)
-        self.start_height_spinbox.setRange(0, 50000)  # Set the range from 0 to 50,000 meters
+        self.start_height_spinbox.setRange(0.01, 50000)  # Set the range from 0 to 50,000 meters
         self.start_height_spinbox.setValue(1000)  # Default value
         self.start_height_spinbox.setPrefix("Start Height (m): ")
         self.start_height_spinbox.valueChanged.connect(self.update_start_height)
@@ -54,7 +53,7 @@ class AnalyticalWindow(QWidget):
 
         # Add a spin box for drag coefficient adjustment
         self.drag_coefficient_spinbox = QDoubleSpinBox(self)
-        self.drag_coefficient_spinbox.setRange(0, 50000)  # Set the range
+        self.drag_coefficient_spinbox.setRange(0.01, 50000)  # Set the range
         self.drag_coefficient_spinbox.setValue(0.47)  # Default value
         self.drag_coefficient_spinbox.setPrefix("Drag Coefficient: ")
         self.drag_coefficient_spinbox.valueChanged.connect(self.update_drag_coefficient)
@@ -62,7 +61,7 @@ class AnalyticalWindow(QWidget):
 
         # Add a spin box for mass adjustment
         self.mass_spinbox = QDoubleSpinBox(self)
-        self.mass_spinbox.setRange(1, 50000)  # Set the range
+        self.mass_spinbox.setRange(0.01, 50000)  # Set the range
         self.mass_spinbox.setValue(50)  # Default value
         self.mass_spinbox.setPrefix("Mass (kg): ")
         self.mass_spinbox.valueChanged.connect(self.update_mass)
@@ -70,7 +69,7 @@ class AnalyticalWindow(QWidget):
 
         # Add a spin box for cross sectional area adjustment
         self.cross_sectional_area_spinbox = QDoubleSpinBox(self)
-        self.cross_sectional_area_spinbox.setRange(0, 50000)  # Set the range
+        self.cross_sectional_area_spinbox.setRange(0.01, 50000)  # Set the range
         self.cross_sectional_area_spinbox.setValue(1)  # Default value
         self.cross_sectional_area_spinbox.setPrefix("Cross Sectional Area (m^2): ")
         self.cross_sectional_area_spinbox.valueChanged.connect(self.update_cross_sectional_area)
@@ -124,10 +123,14 @@ class AnalyticalWindow(QWidget):
         self.plotter.plot_freefall(ax1, ax2)
         self.canvas.draw()
 
-    def show(self):
-        # Before showing, disable the appropriate button
-        self.navigation_ribbon.set_active_button("analytical")
-        super().show()
-
     def go_to_home(self):
         self.parent().setCurrentIndex(0)  # Switch back to the home page
+
+    def go_to_theory_window(self):
+        self.parent().setCurrentWidget(self.parent().parent().theory_window)  # Switch to the TheoryWindow
+
+    def go_to_euler_window(self):
+        self.parent().setCurrentWidget(self.parent().parent().euler_window)  # Switch to the Analytical Window
+
+    def go_to_modified_euler_window(self):
+        self.parent().setCurrentWidget(self.parent().parent().modified_euler_window)  # Switch to the Analytical Window
