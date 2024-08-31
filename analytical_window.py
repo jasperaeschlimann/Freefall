@@ -8,22 +8,21 @@ from navigation_ribbon import NavigationRibbon
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
-QDialog,
-QLabel,
-QVBoxLayout,
-QWidget
+    QWidget,
+    QLabel,
+    QDoubleSpinBox,
+    QVBoxLayout
 )
 
-class AnalyticalWindow(QDialog):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class AnalyticalWindow(QWidget):
+    def __init__(self, parent=None):
+        super(AnalyticalWindow, self).__init__(parent)
         
         # Set the title and size of the window
-        self.setWindowTitle("Analytical Method")
         self.setGeometry(100, 100, 800, 600)
 
         # Create a layout
-        self.layout = QVBoxLayout()
+        self.layout = QVBoxLayout(self)
 
         # Add the navigation ribbon
         self.navigation_ribbon = NavigationRibbon(self)
@@ -31,10 +30,7 @@ class AnalyticalWindow(QDialog):
 
         # Connect ribbon buttons to methods
         self.navigation_ribbon.home_button.clicked.connect(self.go_to_home)
-        #self.navigation_ribbon.theory_button.clicked.connect(self.go_to_theory)
         self.navigation_ribbon.analytical_button.clicked.connect(self.show)  # Stay on this window
-        #self.navigation_ribbon.euler_button.clicked.connect(self.go_to_euler)
-        #self.navigation_ribbon.modified_euler_button.clicked.connect(self.go_to_modified_euler)
 
         # Add a title label
         self.title_label = QLabel("Freefall Simulator", self)
@@ -43,37 +39,95 @@ class AnalyticalWindow(QDialog):
         self.layout.addWidget(self.title_label)
 
         # Add the descriptive text as a separate label
-        self.description_label = QLabel(
-            "bla bla bla", self
-        )
+        self.description_label = QLabel("bla bla bla", self)
         self.description_label.setWordWrap(True)  # Enable text wrapping
         self.description_label.setStyleSheet("font-size: 16px; margin-top: 10px;")
         self.layout.addWidget(self.description_label)
 
-        #Create a Matplotlib figure and canvas
+        # Add a spin box for start height adjustment
+        self.start_height_spinbox = QDoubleSpinBox(self)
+        self.start_height_spinbox.setRange(0, 50000)  # Set the range from 0 to 50,000 meters
+        self.start_height_spinbox.setValue(1000)  # Default value
+        self.start_height_spinbox.setPrefix("Start Height (m): ")
+        self.start_height_spinbox.valueChanged.connect(self.update_start_height)
+        self.layout.addWidget(self.start_height_spinbox)
+
+        # Add a spin box for drag coefficient adjustment
+        self.drag_coefficient_spinbox = QDoubleSpinBox(self)
+        self.drag_coefficient_spinbox.setRange(0, 50000)  # Set the range
+        self.drag_coefficient_spinbox.setValue(0.47)  # Default value
+        self.drag_coefficient_spinbox.setPrefix("Drag Coefficient: ")
+        self.drag_coefficient_spinbox.valueChanged.connect(self.update_drag_coefficient)
+        self.layout.addWidget(self.drag_coefficient_spinbox)
+
+        # Add a spin box for mass adjustment
+        self.mass_spinbox = QDoubleSpinBox(self)
+        self.mass_spinbox.setRange(1, 50000)  # Set the range
+        self.mass_spinbox.setValue(50)  # Default value
+        self.mass_spinbox.setPrefix("Mass (kg): ")
+        self.mass_spinbox.valueChanged.connect(self.update_mass)
+        self.layout.addWidget(self.mass_spinbox)
+
+        # Add a spin box for cross sectional area adjustment
+        self.cross_sectional_area_spinbox = QDoubleSpinBox(self)
+        self.cross_sectional_area_spinbox.setRange(0, 50000)  # Set the range
+        self.cross_sectional_area_spinbox.setValue(1)  # Default value
+        self.cross_sectional_area_spinbox.setPrefix("Cross Sectional Area (m^2): ")
+        self.cross_sectional_area_spinbox.valueChanged.connect(self.update_cross_sectional_area)
+        self.layout.addWidget(self.cross_sectional_area_spinbox)
+
+        # Create a Matplotlib figure and canvas
         self.figure = Figure()
         self.canvas = FigureCanvas(self.figure)
         self.layout.addWidget(self.canvas)
 
-        #initialise plotter
-        falling_object = Freefall_object("Ball", 1000, 0, 0.47, 50, 1)
-        Earth = Planet("Earth", 9.81, 1.225)
-        self.plotter = FreefallPlotter(falling_object, Earth)
+        # Initialize plotter
+        self.falling_object = Freefall_object("Ball", self.start_height_spinbox.value(), 0, self.drag_coefficient_spinbox.value(), self.mass_spinbox.value(), self.cross_sectional_area_spinbox.value())
+        self.planet = Planet("Earth", 9.81, 1.225)
+        self.plotter = FreefallPlotter(self.falling_object, self.planet)
 
         self.plot_freefall()
-        self.setLayout(self.layout)
+
+    def update_start_height(self, value):
+        """
+        Update the start height of the falling object and replot the graph.
+        """
+        self.falling_object.start_height = value
+        self.plot_freefall()
+
+    def update_drag_coefficient(self, value):
+        """
+        Update the drag coefficient of the falling object and replot the graph.
+        """
+        self.falling_object.drag_coefficient = value
+        self.plot_freefall()
+
+    def update_mass(self, value):
+        """
+        Update the mass of the falling object and replot the graph.
+        """
+        self.falling_object.mass = value
+        self.plot_freefall()
+
+    def update_cross_sectional_area(self, value):
+        """
+        Update the cross sectional area of the falling object and replot the graph.
+        """
+        self.falling_object.cross_sectional_area = value
+        self.plot_freefall()
 
     def plot_freefall(self):
+        self.figure.clear()  # Clear the previous plot
         ax1 = self.figure.add_subplot(111)
-        ax2 = ax1.twinx() # Create a secondary y-axis for velocity
+        ax2 = ax1.twinx()  # Create a secondary y-axis for velocity
 
-        self.plotter.plot_freefall(ax1,ax2)
+        self.plotter.plot_freefall(ax1, ax2)
         self.canvas.draw()
 
+    def show(self):
+        # Before showing, disable the appropriate button
+        self.navigation_ribbon.set_active_button("analytical")
+        super().show()
+
     def go_to_home(self):
-        self.hide()
-        self.parent().show()
-    
-
-
-
+        self.parent().setCurrentIndex(0)  # Switch back to the home page

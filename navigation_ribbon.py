@@ -20,3 +20,23 @@ class NavigationRibbon(QWidget):
         layout.addWidget(self.modified_euler_button)
 
         self.setLayout(layout)
+    
+    def set_active_button(self, active_button: str):
+        """
+        Disable the button corresponding to the current page.
+        """
+        # First, enable all buttons
+        self.home_button.setEnabled(True)
+        self.analytical_button.setEnabled(True)
+        self.euler_button.setEnabled(True)
+        self.modified_euler_button.setEnabled(True)
+
+        # Then, disable the active button
+        if active_button == "home":
+            self.home_button.setEnabled(False)
+        elif active_button == "analytical":
+            self.analytical_button.setEnabled(False)
+        elif active_button == "euler":
+            self.euler_button.setEnabled(False)
+        elif active_button == "modified_euler":
+            self.modified_euler_button.setEnabled(False)
