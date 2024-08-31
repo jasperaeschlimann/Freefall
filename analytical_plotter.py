@@ -19,12 +19,10 @@ class FreefallPlotter:
     def generate_velocity_array(self, time_array):
         return [self.falling_object.analytical_velocity(self.planet.air_density, self.planet.gravity, t) for t in time_array]
 
-    def plot_freefall(self):
+    def plot_freefall(self, ax1, ax2):
         time_array = self.generate_time_array()
         height_array = self.generate_height_array(time_array)
         velocity_array = self.generate_velocity_array(time_array)
-
-        fig, ax1 = plt.subplots()
 
         color = 'tab:red'
         ax1.set_xlabel('Time (s)')
@@ -37,6 +35,3 @@ class FreefallPlotter:
         ax2.set_ylabel('Velocity (m/s)', color=color)
         ax2.plot(time_array, velocity_array, color=color)
         ax2.tick_params(axis='y', labelcolor=color)
-
-        fig.tight_layout()  
-        plt.show()
