@@ -16,13 +16,14 @@ class EulerWindow(QWidget):
 
         # Add the navigation ribbon
         self.navigation_ribbon = NavigationRibbon(self)
+        self.navigation_ribbon.set_active_button("euler")
         self.layout.addWidget(self.navigation_ribbon)
 
-        # Connect ribbon buttons to methods
-        self.navigation_ribbon.home_button.clicked.connect(self.go_to_home)
-        self.navigation_ribbon.theory_button.clicked.connect(self.go_to_theory_window)
-        self.navigation_ribbon.analytical_button.clicked.connect(self.go_to_analytical_window)
-        self.navigation_ribbon.modified_euler_button.clicked.connect(self.go_to_modified_euler_window)
+        # Connect ribbon buttons to NavigationManager
+        self.navigation_ribbon.home_button.clicked.connect(lambda: self.parent().parent().navigation_manager.go_to_home())
+        self.navigation_ribbon.theory_button.clicked.connect(lambda: self.parent().parent().navigation_manager.go_to_theory())
+        self.navigation_ribbon.analytical_button.clicked.connect(lambda: self.parent().parent().navigation_manager.go_to_analytical())
+        self.navigation_ribbon.modified_euler_button.clicked.connect(lambda: self.parent().parent().navigation_manager.go_to_modified_euler())
 
         # Add a title label
         self.title_label = QLabel("Freefall Simulator", self)
@@ -35,15 +36,3 @@ class EulerWindow(QWidget):
         self.description_label.setWordWrap(True)  # Enable text wrapping
         self.description_label.setStyleSheet("font-size: 16px; margin-top: 10px;")
         self.layout.addWidget(self.description_label)
-
-    def go_to_home(self):
-        self.parent().setCurrentIndex(0)  # Switch back to the home page
-
-    def go_to_theory_window(self):
-        self.parent().setCurrentWidget(self.parent().parent().theory_window)  # Switch to the TheoryWindow
-
-    def go_to_analytical_window(self):
-        self.parent().setCurrentWidget(self.parent().parent().analytical_window)  # Switch to the Analytical Window
-
-    def go_to_modified_euler_window(self):
-        self.parent().setCurrentWidget(self.parent().parent().modified_euler_window)  # Switch to the Analytical Window

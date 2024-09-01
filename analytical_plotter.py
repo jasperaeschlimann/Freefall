@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from freefall_object import Freefall_object
-from planets import Planet
+from objects.freefall_object import Freefall_object
+from objects.planets import Planet
 
 class FreefallPlotter:
     def __init__(self, falling_object: Freefall_object, planet: Planet, num_points: int = 100):

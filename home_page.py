@@ -4,8 +4,11 @@ from PyQt5.QtWidgets import (
 )
 
 class HomePage(QWidget):
-    def __init__(self, parent=None):
+    def __init__(self, navigation_manager, parent=None):
         super(HomePage, self).__init__(parent)
+
+        #Create navigation manager
+        self.navigation_manager = navigation_manager
 
         # Create a layout
         self.layout = QVBoxLayout(self)
@@ -55,3 +58,9 @@ class HomePage(QWidget):
         button_layout.addWidget(self.button3)
         button_layout.addWidget(self.button4)
         self.layout.addLayout(button_layout)
+
+        # Connect buttons to navigation manager
+        self.button1.clicked.connect(self.navigation_manager.go_to_theory)
+        self.button2.clicked.connect(self.navigation_manager.go_to_analytical)
+        self.button3.clicked.connect(self.navigation_manager.go_to_euler)
+        self.button4.clicked.connect(self.navigation_manager.go_to_modified_euler)

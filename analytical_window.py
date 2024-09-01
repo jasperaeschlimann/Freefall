@@ -1,8 +1,8 @@
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
-from planets import Planet
-from freefall_object import Freefall_object
+from objects.planets import Planet
+from objects.freefall_object import Freefall_object
 from analytical_plotter import FreefallPlotter
 from navigation_ribbon import NavigationRibbon
 
@@ -23,13 +23,14 @@ class AnalyticalWindow(QWidget):
 
         # Add the navigation ribbon
         self.navigation_ribbon = NavigationRibbon(self)
+        self.navigation_ribbon.set_active_button("analytical")
         self.layout.addWidget(self.navigation_ribbon)
 
-        # Connect ribbon buttons to methods
-        self.navigation_ribbon.home_button.clicked.connect(self.go_to_home)
-        self.navigation_ribbon.theory_button.clicked.connect(self.go_to_theory_window)
-        self.navigation_ribbon.euler_button.clicked.connect(self.go_to_euler_window)
-        self.navigation_ribbon.modified_euler_button.clicked.connect(self.go_to_modified_euler_window)
+        # Connect ribbon buttons to NavigationManager
+        self.navigation_ribbon.home_button.clicked.connect(lambda: self.parent().parent().navigation_manager.go_to_home())
+        self.navigation_ribbon.theory_button.clicked.connect(lambda: self.parent().parent().navigation_manager.go_to_theory())
+        self.navigation_ribbon.euler_button.clicked.connect(lambda: self.parent().parent().navigation_manager.go_to_euler())
+        self.navigation_ribbon.modified_euler_button.clicked.connect(lambda: self.parent().parent().navigation_manager.go_to_modified_euler())
 
         # Add a title label
         self.title_label = QLabel("Freefall Simulator", self)
@@ -122,15 +123,3 @@ class AnalyticalWindow(QWidget):
 
         self.plotter.plot_freefall(ax1, ax2)
         self.canvas.draw()
-
-    def go_to_home(self):
-        self.parent().setCurrentIndex(0)  # Switch back to the home page
-
-    def go_to_theory_window(self):
-        self.parent().setCurrentWidget(self.parent().parent().theory_window)  # Switch to the TheoryWindow
-
-    def go_to_euler_window(self):
-        self.parent().setCurrentWidget(self.parent().parent().euler_window)  # Switch to the Analytical Window
-
-    def go_to_modified_euler_window(self):
-        self.parent().setCurrentWidget(self.parent().parent().modified_euler_window)  # Switch to the Analytical Window

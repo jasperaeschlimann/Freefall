@@ -1,9 +1,10 @@
-from PyQt5.QtWidgets import QMainWindow, QStackedWidget, QApplication
+from PyQt5.QtWidgets import QMainWindow, QStackedWidget
 from home_page import HomePage
 from theory_window import TheoryWindow
 from analytical_window import AnalyticalWindow
 from euler_window import EulerWindow
 from modified_euler_window import ModifiedEulerWindow
+from navigation_manager import NavigationManager
 
 class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
@@ -17,8 +18,11 @@ class MainWindow(QMainWindow):
         self.stacked_widget = QStackedWidget(self)
         self.setCentralWidget(self.stacked_widget)
 
+        # Initialise navigation manager
+        self.navigation_manager = NavigationManager(self.stacked_widget)
+
         # Create and add pages to the stacked widget
-        self.home_page = HomePage(self)
+        self.home_page = HomePage(self.navigation_manager, self)
         self.theory_window = TheoryWindow(self)
         self.analytical_window = AnalyticalWindow(self)
         self.euler_window = EulerWindow(self)
@@ -30,26 +34,10 @@ class MainWindow(QMainWindow):
         self.stacked_widget.addWidget(self.euler_window)
         self.stacked_widget.addWidget(self.modified_euler_window)
 
-        # Connect buttons on the homepage to switch pages
-        self.home_page.button1.clicked.connect(self.open_theory)  
-        self.home_page.button2.clicked.connect(self.open_analytical_method)
-        self.home_page.button3.clicked.connect(self.open_euler_method)  
-        self.home_page.button4.clicked.connect(self.open_modified_euler_method)  
+        # NavigationManager register windows
+        self.navigation_manager.register_window('home', self.home_page)
+        self.navigation_manager.register_window('analytical', self.analytical_window)
+        self.navigation_manager.register_window('theory', self.theory_window)
+        self.navigation_manager.register_window('euler', self.euler_window)
+        self.navigation_manager.register_window('modified_euler', self.modified_euler_window) 
 
-        #navigation ribbon buttons disabled
-        self.theory_window.navigation_ribbon.set_active_button("theory")
-        self.analytical_window.navigation_ribbon.set_active_button("analytical")
-        self.euler_window.navigation_ribbon.set_active_button("euler")
-        self.modified_euler_window.navigation_ribbon.set_active_button("modified_euler")
-
-    def open_theory(self):
-        self.stacked_widget.setCurrentWidget(self.theory_window)
-
-    def open_analytical_method(self):
-        self.stacked_widget.setCurrentWidget(self.analytical_window)
-
-    def open_euler_method(self):
-        self.stacked_widget.setCurrentWidget(self.euler_window)
-
-    def open_modified_euler_method(self):
-        self.stacked_widget.setCurrentWidget(self.modified_euler_window)
